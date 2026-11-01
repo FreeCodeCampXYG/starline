@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>故事搭子 · 3D设计演示</title>
+  <style>
+    :root { font-family:"Microsoft YaHei","PingFang SC",sans-serif; color:#223130; background:#e9efed; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100vh }
+    button,input { font:inherit }
+    button { cursor:pointer }
+    .app { min-height:100vh; display:grid; grid-template-columns:330px minmax(0,1fr) }
+    .sidebar { position:relative; z-index:2; background:#fbfcfa; border-right:1px solid #dfe8e4; padding:27px 23px 22px; display:flex; flex-direction:column; gap:19px; overflow:auto }
+    .eyebrow { color:#127b73; font-size:11px; letter-spacing:.12em; font-weight:bold; margin-bottom:8px }
+    h1 { font-size:27px; letter-spacing:-.04em; margin:0 }
+    .subtitle { font-size:12px; color:#768784; line-height:1.7; margin:6px 0 0 }
+    .section { padding-top:17px; border-top:1px solid #e9eeeb }
+    .section-title { display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:bold; margin:0 0 11px }
+    .secondary { font-size:11px; font-weight:normal; color:#9aa7a3 }
+    .views { display:grid; grid-template-columns:1fr 1fr; gap:7px }
+    .views button,.small-button { border:1px solid #e0e9e5; border-radius:9px; background:white; color:#596c67; padding:9px 10px; font-size:12px; text-align:left }
+    .views button:hover,.small-button:hover { border-color:#98cbc1 }
+    .views button.active { color:#0e7770; border-color:#70c2b2; background:#eaf8f4; font-weight:bold }
+    .skin-list { display:grid; grid-template-columns:1fr 1fr; gap:7px }
+    .skin { display:flex; align-items:center; gap:8px; border:1px solid #e0e9e5; border-radius:9px; padding:8px; background:white; color:#52635e; font-size:12px }
+    .skin.active { border-color:#68bdaa; box-shadow:0 0 0 1px #68bdaa }
+    .swatch { width:17px; height:17px; border-radius:50%; border:1px solid #b8c7c0; flex:none }
+    .custom { display:flex; align-items:center; gap:10px; margin-top:11px; font-size:12px; color:#72827e }
+    .custom input { width:30px; height:24px; padding:0; border:0; background:none }
+    .explain { border-radius:11px; background:#eff5f2; padding:12px 13px; font-size:12px; line-height:1.75; color:#61736d }
+    .hint { margin-top:auto; color:#9aa7a2; font-size:11px; line-height:1.6 }
+    .files-help { font-size:11px; color:#7d8b87; line-height:1.7 }
+    .files-help summary { cursor:pointer; color:#496b61 }
+    .files-help p { margin:8px 0 0 }
+    .stage { position:relative; min-height:690px; overflow:hidden; background:radial-gradient(ellipse at 50% 42%,#fcfdfa 0%,#e5ece8 75%,#dce4e0 100%) }
+    #canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:grab }
+    #canvas:active { cursor:grabbing }
+    #status { position:absolute; top:48%; left:50%; transform:translate(-50%,-50%); font-size:14px; color:#61736d; text-align:center }
+    .topbar { position:absolute; top:21px; right:22px; z-index:2; display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end }
+    .topbar button { background:#fffffff0; border:1px solid #dce7e2; color:#526963; border-radius:8px; padding:8px 11px; font-size:12px; box-shadow:0 2px 10px #2249380a }
+    .stage-caption { position:absolute; bottom:18px; left:20px; max-width:calc(100% - 40px); background:#ffffffea; color:#667972; border-radius:10px; padding:9px 12px; font-size:11px; line-height:1.6 }
+    .reference { position:absolute; top:69px; right:22px; z-index:3; width:min(260px,55vw); background:#fff; padding:9px; border-radius:11px; box-shadow:0 8px 24px #233e3533 }
+    .reference img { display:block; width:100%; border-radius:7px }
+    .reference p { font-size:11px; color:#697e77; margin:8px 3px 2px; line-height:1.5 }
+    [hidden] { display:none !important }
+    .layers { position:absolute; left:50%; bottom:58px; transform:translateX(-50%); z-index:2; width:min(460px,90%); background:#fffffff2; box-shadow:0 6px 24px #20352e18; border:1px solid #e1ebe6; border-radius:12px; padding:12px 16px }
+    .layers-row { display:flex; justify-content:space-between; font-size:12px; color:#415952; margin-bottom:6px }
+    .layers input { width:100%; accent-color:#2aab98 }
+    .layers-actions { display:flex; align-items:center; gap:10px; margin-top:4px }
+    .layers-actions button { border:1px solid #b8d9d0; border-radius:7px; background:#eff9f5; color:#21685d; padding:6px 10px; font-size:11px }
+    .layers small { color:#83938d; font-size:10px; line-height:1.5 }
+    @media(max-width:760px) { .app { display:flex; flex-direction:column } .sidebar { padding:20px; gap:15px; overflow:visible } .stage { min-height:68vh; order:-1 } .topbar { top:12px; right:12px } .hint { display:none } .stage-caption { bottom:9px; left:10px } .layers { bottom:49px } }
+  </style>
+</head>
+<body>
+<main class="app">
+  <aside class="sidebar">
+    <header><div class="eyebrow">STORY COMPANION · DESIGN STUDY</div><h1>故事搭子</h1><p class="subtitle">参考原图的 3D 设计演示，可换色、拆解、剖切并观察截面。</p></header>
+    <section class="section"><h2 class="section-title">看看它的结构 <span class="secondary">示意</span></h2>
+      <div class="views" role="group" aria-label="演示视图">
+        <button type="button" data-mode="assembled" class="active" aria-pressed="true">◉ &nbsp;整机外观</button>
+        <button type="button" data-mode="exploded" aria-pressed="false">◇ &nbsp;拆解结构</button>
+        <button type="button" data-mode="cut" aria-pressed="false">⊟ &nbsp;机壳三段剖切</button>
+        <button type="button" data-mode="inside" aria-pressed="false">▣ &nbsp;内部布局</button>
+        <button type="button" data-mode="plate" aria-pressed="false">▤ &nbsp;摆盘示意</button>
+        <button type="button" data-mode="layers" aria-pressed="false">≋ &nbsp;逐层截面</button>
+      </div>
+    </section>
+    <section class="section"><h2 class="section-title">外观换色 <span class="secondary">仅改变展示配色</span></h2>
+      <div class="skin-list" role="group" aria-label="配色方案">
+        <button class="skin active" type="button" data-skin="pearl" aria-pressed="true"><span class="swatch" style="background:#f0f1ee"></span>参考白</button>
+        <button class="skin" type="button" data-skin="blue" aria-pressed="false"><span class="swatch" style="background:#b9cdda"></span>雾霾蓝</button>
+        <button class="skin" type="button" data-skin="mint" aria-pressed="false"><span class="swatch" style="background:#c1ded0"></span>薄荷绿</button>
+        <button class="skin" type="button" data-skin="pink" aria-pressed="false"><span class="swatch" style="background:#f1cbd0"></span>蜜桃粉</button>
+      </div>
+      <label class="custom">自定义机身 <input id="shellColor" type="color" value="#f0f1ee" aria-label="机身颜色"> <span>眼睛</span><input id="eyeColor" type="color" value="#8bf5f2" aria-label="眼睛颜色"></label>
+    </section>
+    <div class="explain" id="modeInfo">单张正面图重建的近似造型。厚度与背面是示意，尚未完成实物装配设计。</div>
+    <div class="files-help" id="insideLegend" hidden>内部位置示意<br>主板：名义 60 × 40 mm<br>音频板、扬声器、麦克风：尺寸未实测<br>线条：仅表示走线空间</div>
+    <details class="files-help"><summary>模型文件和打印文件怎么区分？</summary><p>当前 3MF / GLB 用于查看造型。将来选定机型、耗材并用 Bambu Studio 切片后，才能得到通常以 .gcode.3mf 结尾的打印任务。网页截面是示意，不生成机器路径。</p></details>
+    <div class="hint">鼠标拖动旋转 · 滚轮缩放<br>手机和触屏可直接拖动</div>
+  </aside>
+  <section class="stage" aria-label="故事搭子三维演示">
+    <canvas id="canvas"></canvas><div id="status">正在准备 3D 设计演示…</div>
+    <div class="topbar"><button id="front" type="button">正面</button><button id="back" type="button">背面</button><button id="angle" type="button">斜视</button><button id="referenceButton" type="button" aria-expanded="false">对照原图</button><button id="capture" type="button">保存图片</button></div>
+    <div class="reference" id="reference" hidden><img src="__REFERENCE_IMAGE__" alt="用户提供的故事搭子原始参考图"><p>原图是正面效果参考，背面和内部没有提供。</p></div>
+    <div class="layers" id="layerPanel" hidden><div class="layers-row"><span>截面高度</span><strong id="heightLabel">80 mm（示意）</strong></div><input id="height" type="range" min="1" max="158" step="1" value="80" aria-label="截面高度"><div class="layers-actions"><button id="playLayers" type="button">播放逐层</button><small>几何截面按 1 mm 步进演示；不是打印机逐层路径、层高或 G-code。</small></div></div>
+    <div class="stage-caption" id="stageCaption">外观重建演示 · 未完成真实硬件适配</div>
+  </section>
+</main>
+<script>__THREE_SOURCE__</script>
+<script>
+(async function () {
+  const status=document.getElementById('status');
+  try {
+    const bytes=Uint8Array.from(atob('__PACKED_MODEL__'),c=>c.charCodeAt(0));
+    if(!window.DecompressionStream) throw new Error('请使用较新的 Edge 或 Chrome 浏览器。');
+    const data=JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
+    const cutsBytes=Uint8Array.from(atob('__PACKED_CUTS__'),c=>c.charCodeAt(0));
+    const cutsData=JSON.parse(await new Response(new Blob([cutsBytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
+    const palette=__PALETTE__;
+    const canvas=document.getElementById('canvas');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15; renderer.localClippingEnabled=true;
+    const scene=new THREE.Scene(), model=new THREE.Group(), plateGroup=new THREE.Group(),cutGroup=new THREE.Group(); scene.add(model,plateGroup,cutGroup);
+    const camera=new THREE.PerspectiveCamera(34,1,1,2500); camera.up.set(0,0,1);
+    scene.add(new THREE.HemisphereLight(0xffffff,0xb5b8b8,1.05));
+    const mainLight=new THREE.DirectionalLight(0xfff7ef,2.2); mainLight.position.set(-100,180,270); scene.add(mainLight);
+    const fillLight=new THREE.DirectionalLight(0xc9e5f4,.6); fillLight.position.set(150,40,150); scene.add(fillLight);
+    const rearLight=new THREE.DirectionalLight(0xf3f8ff,1.8); rearLight.position.set(-80,-180,190); scene.add(rearLight);
+    // 离线生成摄影棚环境，只影响材质高光，不改变模型曲面或打印材料。
+    const envCanvas=document.createElement('canvas');envCanvas.width=1024;envCanvas.height=512;
+    const ec=envCanvas.getContext('2d');ec.fillStyle='#4a5154';ec.fillRect(0,0,1024,512);
+    ec.filter='blur(18px)';ec.fillStyle='#edf4f5';ec.fillRect(80,45,100,350);ec.fillStyle='#aebfc5';ec.fillRect(630,95,180,220);
+    ec.filter='blur(32px)';ec.fillStyle='#ffffff';ec.fillRect(300,5,380,48);
+    const envTexture=new THREE.CanvasTexture(envCanvas);envTexture.mapping=THREE.EquirectangularReflectionMapping;envTexture.colorSpace=THREE.SRGBColorSpace;
+    const pmrem=new THREE.PMREMGenerator(renderer);const envTarget=pmrem.fromEquirectangular(envTexture);scene.environment=envTarget.texture;envTexture.dispose();pmrem.dispose();
+    const mats={};
+    for(const [key,v] of Object.entries(palette)) mats[key]=new THREE.MeshPhysicalMaterial({color:v[0],roughness:v[1],metalness:v[2],side:THREE.DoubleSide,envMapIntensity:.65});
+    Object.assign(mats.ceramic,{roughness:.32,metalness:.03,clearcoat:.5,clearcoatRoughness:.25});
+    Object.assign(mats.dark,{roughness:.16,metalness:.12,clearcoat:.9,clearcoatRoughness:.08});
+    Object.assign(mats.lens,{roughness:.07,metalness:.2,clearcoat:1});
+    mats.cyan.emissive.set('#77e6ec');mats.cyan.emissiveIntensity=.3;
+    const skins={
+      pearl:{shell:'#f0f1ee',shadow:'#cdd2cf',joint:'#93a3a0',eye:'#8bf5f2'},
+      blue:{shell:'#b9cdda',shadow:'#8eacbc',joint:'#718c9b',eye:'#a6f5ff'},
+      mint:{shell:'#c1ded0',shadow:'#95c2b0',joint:'#759e91',eye:'#b2fff0'},
+      pink:{shell:'#f1cbd0',shadow:'#d3a4ad',joint:'#b28c99',eye:'#d0fcff'}
+    };
+    function applySkin(skin,source) {
+      mats.ceramic.color.set(skin.shell); mats.shadow_white.color.set(skin.shadow); mats.joint.color.set(skin.joint); mats.cyan.color.set(skin.eye);mats.cyan.emissive.set(skin.eye);
+      document.getElementById('shellColor').value=skin.shell; document.getElementById('eyeColor').value=skin.eye;
+      for(const b of document.querySelectorAll('.skin')) { const active=b.dataset.skin===source; b.classList.toggle('active',active); b.setAttribute('aria-pressed',String(active)); }
+      draw();
+    }
+    function category(name) {
+      if(name.startsWith('diagram_')) return 'inside';
+      if(name.startsWith('rear_')) return 'rear';
+      if(name==='left_eye'||name==='right_eye'||name==='smile'||name.startsWith('face_')) return 'face';
+      if(/^(camera_|lens_|pcb_|mount_|chest_)/.test(name)) return 'camera';
+      if(name.startsWith('speaker_')) return 'speaker';
+      if(/^(left|right)_(shoulder|upper_arm|sleeve|wrist|hand|finger|arm_ridge)/.test(name)) return name.startsWith('left_')?'armLeft':'armRight';
+      return 'shell';
+    }
+    function meshGeometry(vertices,indices) {
+      // 分离折角与平滑面，避免大面法线使正面开口产生锯齿阴影。
+      const points=[]; for(let i=0;i<vertices.length;i+=3) points.push(new THREE.Vector3(vertices[i],vertices[i+1],vertices[i+2]));
+      const normals=[],adj=Array.from({length:points.length},()=>[]);
+      for(let i=0;i<indices.length;i+=3){const [a,b,c]=[indices[i],indices[i+1],indices[i+2]];const n=new THREE.Vector3().subVectors(points[b],points[a]).cross(new THREE.Vector3().subVectors(points[c],points[a])).normalize();const fi=normals.push(n)-1;for(const v of [a,b,c])adj[v].push(fi);}
+      const pos=[],nor=[];
+      for(let i=0;i<indices.length;i++){const v=indices[i],current=normals[Math.floor(i/3)],n=new THREE.Vector3();for(const fi of adj[v])if(current.dot(normals[fi])>.42)n.add(normals[fi]);n.normalize();pos.push(...points[v].toArray());nor.push(...n.toArray());}
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));return geo;
+    }
+    const meshes=[];
+    for(const part of data){ const mesh=new THREE.Mesh(meshGeometry(part.vertices,part.faces),mats[part.material]); mesh.name=part.name; mesh.userData.category=category(part.name); model.add(mesh); meshes.push({mesh,part}); }
+    // 屏幕反光是展示材质，作为脸板子节点随拆解移动，不写成打印几何。
+    const reflectionShape=new THREE.Shape();reflectionShape.moveTo(-32,105);reflectionShape.lineTo(-27,105);reflectionShape.lineTo(-21,140);reflectionShape.lineTo(-27,141);reflectionShape.closePath();
+    const reflectionGeo=new THREE.ShapeGeometry(reflectionShape);reflectionGeo.rotateX(Math.PI/2);reflectionGeo.translate(0,27.12,0);
+    const reflection=new THREE.Mesh(reflectionGeo,new THREE.MeshBasicMaterial({color:0xfff8ed,transparent:true,opacity:.21,depthWrite:false,side:THREE.DoubleSide}));
+    meshes.find(x=>x.part.name==='face_black_screen').mesh.add(reflection);
+    for(const part of cutsData){const mesh=new THREE.Mesh(meshGeometry(part.vertices,part.faces),mats.ceramic);mesh.position.z=part.offset;mesh.name=part.name;cutGroup.add(mesh);}
+    const plateMat=new THREE.MeshStandardMaterial({color:'#d6dfdb',roughness:1});
+    const plate=new THREE.Mesh(new THREE.BoxGeometry(290,220,1.2),plateMat); plate.position.z=-1; plateGroup.add(plate);
+    const grid=new THREE.GridHelper(290,29,0xadbdb4,0xd2dcd6); grid.rotation.x=Math.PI/2; grid.position.z=-.35; plateGroup.add(grid);
+    function addPlatePiece(name,x,y){
+      const found=meshes.find(item=>item.part.name===name);if(!found)return;
+      const geo=found.mesh.geometry.clone(); geo.rotateX(-Math.PI/2);geo.computeBoundingBox();const box=geo.boundingBox;
+      geo.translate(x-(box.min.x+box.max.x)/2,y-(box.min.y+box.max.y)/2,-box.min.z+.1);
+      const copy=new THREE.Mesh(geo,found.mesh.material);copy.name='plate_'+name;plateGroup.add(copy);
+    }
+    addPlatePiece('rounded_white_body',-74,0);addPlatePiece('rear_cover',65,15);addPlatePiece('face_black_screen',70,-83);
+    const sectionPlane=new THREE.Plane(new THREE.Vector3(0,0,-1),80);
+    const surface=new THREE.Mesh(new THREE.PlaneGeometry(170,110),new THREE.MeshBasicMaterial({color:0x50c5b1,transparent:true,opacity:.10,depthWrite:false,side:THREE.DoubleSide}));surface.position.z=80;scene.add(surface);
+    const sectionLines=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xe38146,depthTest:false,transparent:true,opacity:.95}));scene.add(sectionLines);
+    const modeTexts={
+      assembled:['整机外观：按参考图重建，背面和厚度为示意。','外观重建演示 · 配色只影响当前网页'],
+      exploded:['拆解示意：前脸、胸前相机、机身、内部占位和后盖分开，手臂向两侧移开。','分组示意 · 不代表已经完成可打印的零件拆分'],
+      cut:['机壳沿 53 mm、103 mm 两个示意平面剖成三段，各段是真实闭合网格。尚未设计连接件或公差。','机壳三段几何剖切 · 未计算连接、支撑或实际打印路径'],
+      inside:['内部布置示意：绿色主板使用 60 × 40 mm 名义外形，其他模块的位置与尺寸均未实测。','主板 / 音频板 / 喇叭 / 麦克风为位置示意，线条不代表真实接线'],
+      plate:['摆盘示意：只展示机身、后盖和脸板。这里没有计算支撑、耗材或真实机型成型范围。','虚拟示意板 · 不是 Bambu Studio 的切片结果'],
+      layers:['上下拖动滑块，查看模型在不同高度的几何截面；橙色是截面轮廓。','几何截面示意 · 不是逐层挤出路径或打印机执行文件']
+    };
+    let mode='assembled',yaw=.025,elev=.03,radius=390,target=new THREE.Vector3(0,0,80),layerTimer=null;
+    const offsets={shell:[0,0,0],rear:[0,-75,0],face:[0,50,18],camera:[0,42,-3],speaker:[0,37,-10],armLeft:[-20,0,0],armRight:[20,0,0],inside:[0,-7,0]};
+    function updateSection(height){
+      sectionPlane.constant=height;surface.position.z=height;
+      const seg=[];const cut=height+.007;
+      for(const {part} of meshes){if(category(part.name)==='inside')continue;const v=part.vertices,f=part.faces;
+        for(let i=0;i<f.length;i+=3){const ids=[f[i],f[i+1],f[i+2]],hits=[];
+          for(let e=0;e<3;e++){const a=ids[e]*3,b=ids[(e+1)%3]*3,da=v[a+2]-cut,db=v[b+2]-cut;
+            if((da<0&&db>0)||(da>0&&db<0)){const t=da/(da-db);hits.push(v[a]+(v[b]-v[a])*t,v[a+1]+(v[b+1]-v[a+1])*t,cut+.03);}}
+          if(hits.length===6)seg.push(...hits);
+        }
+      }
+      sectionLines.geometry.dispose();const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(seg,3));sectionLines.geometry=geo;
+      document.getElementById('heightLabel').textContent=height+' mm（示意）';
+    }
+    function updateMode(next){
+      if(next!=='layers'&&layerTimer){clearInterval(layerTimer);layerTimer=null;document.getElementById('playLayers').textContent='播放逐层';}
+      mode=next; plateGroup.visible=mode==='plate';cutGroup.visible=mode==='cut';model.visible=mode!=='plate'&&mode!=='cut'; surface.visible=sectionLines.visible=mode==='layers';
+      document.getElementById('layerPanel').hidden=mode!=='layers';
+      document.getElementById('insideLegend').hidden=mode!=='inside'&&mode!=='exploded';
+      for(const {mesh} of meshes){const group=mesh.userData.category;mesh.visible=(group!=='inside'||mode==='inside'||mode==='exploded')&&!(group==='rear'&&mode==='inside');const offset=mode==='exploded'?offsets[group]:[0,0,0];mesh.position.set(...offset);}
+      // 切面是交互式几何观察，不能当作切片器生成的机器轨迹。
+      for(const material of Object.values(mats)){material.clippingPlanes=mode==='layers'?[sectionPlane]:[];material.needsUpdate=true;}
+      reflection.material.clippingPlanes=mode==='layers'?[sectionPlane]:[];reflection.material.needsUpdate=true;
+      if(mode==='inside'){yaw=Math.PI+.03;elev=.03;radius=390;target.set(0,0,80);}
+      else if(mode==='plate'){yaw=.55;elev=.88;radius=650;target.set(0,0,0);}
+      else if(mode==='layers'){yaw=.42;elev=.48;radius=450;target.set(0,0,66);updateSection(Number(document.getElementById('height').value));}
+      else if(mode==='exploded'){yaw=.67;elev=.13;radius=520;target.set(0,-8,80);}
+      else if(mode==='cut'){yaw=.58;elev=.22;radius=500;target.set(0,0,80);}
+      else {yaw=.025;elev=.03;radius=390;target.set(0,0,80);}
+      for(const b of document.querySelectorAll('[data-mode]')){const active=b.dataset.mode===mode;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
+      document.getElementById('modeInfo').textContent=modeTexts[mode][0];document.getElementById('stageCaption').textContent=modeTexts[mode][1];draw();
+    }
+    function draw(){const rect=canvas.parentElement.getBoundingClientRect(),w=Math.max(1,rect.width),h=Math.max(1,rect.height);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();const planar=radius*Math.cos(elev);camera.position.set(target.x+planar*Math.sin(yaw),target.y+planar*Math.cos(yaw),target.z+radius*Math.sin(elev));camera.lookAt(target);renderer.render(scene,camera);}
+    let pointer=null;canvas.addEventListener('pointerdown',e=>{pointer=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId)});
+    canvas.addEventListener('pointermove',e=>{if(!pointer)return;yaw-=(e.clientX-pointer[0])*.009;elev=Math.max(-1.2,Math.min(1.2,elev+(e.clientY-pointer[1])*.007));pointer=[e.clientX,e.clientY];draw()});
+    canvas.addEventListener('pointerup',()=>{pointer=null});canvas.addEventListener('pointercancel',()=>{pointer=null});
+    canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(200,Math.min(900,radius*Math.exp(e.deltaY*.001)));draw()},{passive:false});
+    for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>updateMode(b.dataset.mode));
+    for(const b of document.querySelectorAll('[data-skin]'))b.addEventListener('click',()=>applySkin(skins[b.dataset.skin],b.dataset.skin));
+    document.getElementById('shellColor').addEventListener('input',e=>{mats.ceramic.color.set(e.target.value);for(const b of document.querySelectorAll('.skin')){b.classList.remove('active');b.setAttribute('aria-pressed','false')}draw()});
+    document.getElementById('eyeColor').addEventListener('input',e=>{mats.cyan.color.set(e.target.value);mats.cyan.emissive.set(e.target.value);for(const b of document.querySelectorAll('.skin')){b.classList.remove('active');b.setAttribute('aria-pressed','false')}draw()});
+    document.getElementById('height').addEventListener('input',e=>{updateSection(Number(e.target.value));draw()});
+    document.getElementById('playLayers').onclick=()=>{
+      const button=document.getElementById('playLayers');
+      if(layerTimer){clearInterval(layerTimer);layerTimer=null;button.textContent='播放逐层';return;}
+      if(mode!=='layers')updateMode('layers');
+      button.textContent='暂停演示';
+      const slider=document.getElementById('height');
+      if(Number(slider.value)>=158)slider.value='1';
+      layerTimer=setInterval(()=>{
+        const next=Number(slider.value)+1;
+        if(next>158){clearInterval(layerTimer);layerTimer=null;button.textContent='播放逐层';return;}
+        slider.value=String(next);updateSection(next);draw();
+      },70);
+    };
+    document.getElementById('front').onclick=()=>{yaw=0;elev=0;draw()};document.getElementById('back').onclick=()=>{yaw=Math.PI;elev=0;draw()};document.getElementById('angle').onclick=()=>{yaw=.48;elev=.12;draw()};
+    document.getElementById('referenceButton').onclick=e=>{const ref=document.getElementById('reference');ref.hidden=!ref.hidden;e.currentTarget.setAttribute('aria-expanded',String(!ref.hidden))};
+    document.getElementById('capture').onclick=()=>{draw();const a=document.createElement('a');a.download='故事搭子-设计预览.png';a.href=canvas.toDataURL('image/png');a.click()};
+    window.addEventListener('resize',draw);status.hidden=true;updateMode('assembled');applySkin(skins.pearl,'pearl');
+    window.__robotReady={parts:data.length,changeMode:updateMode,getMode:()=>mode,getState:()=>({mode,playing:layerTimer!==null,height:Number(document.getElementById('height').value),shell:'#'+mats.ceramic.color.getHexString(),eyes:'#'+mats.cyan.color.getHexString(),visible:meshes.filter(x=>x.mesh.visible).length,sectionVertices:sectionLines.geometry.getAttribute('position')?.count||0})};
+  } catch(error) { console.error(error); status.textContent='模型未能打开：'+error.message; }
+})();
+</script>
+</body>
+</html>

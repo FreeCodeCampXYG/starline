@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>故事搭子 · 3D 造型演示</title>
+  <style>
+    :root { color-scheme: light; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; color: #222b2f; background: #edf0ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; }
+    .layout { min-height: 100vh; display: grid; grid-template-columns: minmax(270px, 360px) 1fr; }
+    .sidebar { background: #fbfcfa; padding: 36px 30px; border-right: 1px solid #dfe4e1; display: flex; flex-direction: column; gap: 22px; }
+    .tag { width: fit-content; font-size: 12px; letter-spacing: .08em; color: #087f7d; border: 1px solid #b1ded8; border-radius: 20px; padding: 6px 11px; background: #ecf9f7; }
+    h1 { font-size: clamp(27px, 3vw, 35px); margin: 0; letter-spacing: -.04em; line-height: 1.2; }
+    .lead { color: #617073; font-size: 14px; line-height: 1.8; margin: -10px 0 0; }
+    .divider { border: 0; border-top: 1px solid #e7ece8; width: 100%; margin: 0; }
+    .facts { display: grid; gap: 16px; margin: 0; }
+    .fact { display: grid; gap: 5px; }
+    .fact dt { font-size: 12px; color: #82908f; }
+    .fact dd { margin: 0; font-size: 14px; line-height: 1.6; }
+    .notice { border-radius: 12px; background: #f3f6f4; padding: 14px 15px; color: #526360; font-size: 12px; line-height: 1.75; }
+    .help { margin-top: auto; font-size: 12px; color: #8a9895; line-height: 1.7; }
+    .stage { min-height: 640px; position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #fafbf9, #e1e6e3 78%); }
+    #canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    #canvas:active { cursor: grabbing; }
+    .toolbar { position: absolute; top: 24px; right: 24px; display: flex; flex-wrap: wrap; gap: 8px; z-index: 2; }
+    button { border: 1px solid #d7dedb; background: rgba(255,255,255,.9); padding: 9px 13px; color: #31413f; border-radius: 9px; font: inherit; font-size: 13px; cursor: pointer; box-shadow: 0 2px 8px #2540350a; }
+    button:hover { background: white; border-color: #9acbc3; }
+    .caption { position: absolute; left: 24px; bottom: 20px; color: #667470; font-size: 12px; background: #ffffffc9; padding: 9px 12px; border-radius: 8px; }
+    #status { position: absolute; left: 50%; top: 48%; transform: translate(-50%,-50%); color: #526360; text-align: center; line-height: 1.6; }
+    @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } .sidebar { padding: 24px; gap: 14px; } .help { display:none; } .stage { min-height: 65vh; } .toolbar { top: 12px; right: 12px; } }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <aside class="sidebar">
+      <span class="tag">3D 造型演示 · 初版</span>
+      <h1>故事搭子</h1>
+      <p class="lead">按你提供的白色机器人图片重建。拖动模型，可以从不同角度查看。</p>
+      <hr class="divider">
+      <dl class="facts">
+        <div class="fact"><dt>外观重点</dt><dd>圆润白色机身、黑色笑脸、胸前摄像头与两侧小手臂</dd></div>
+        <div class="fact"><dt>参考主板</dt><dd>资料标称 60 × 40 mm；当前模型尚未做实际安装适配</dd></div>
+      </dl>
+      <div class="notice">这是依据单张正面图重建的展示模型。厚度、背面及未拍到的细节为示意；打印结构与孔位需要另行确认。</div>
+      <p class="help">鼠标拖动旋转 · 滚轮缩放<br>手机或触屏可拖动旋转</p>
+    </aside>
+    <section class="stage" aria-label="三维机器人预览">
+      <canvas id="canvas"></canvas>
+      <div id="status">正在加载三维模型…</div>
+      <div class="toolbar"><button id="front">正面</button><button id="angle">斜视</button><button id="reset">重置</button></div>
+      <div class="caption">外观演示，不代表已完成实物装配</div>
+    </section>
+  </main>
+  <script>__THREE_SOURCE__</script>
+  <script>
+  (async function () {
+    const status = document.getElementById('status');
+    try {
+      const bytes = Uint8Array.from(atob('__PACKED_MODEL__'), c => c.charCodeAt(0));
+      if (!window.DecompressionStream) throw new Error('浏览器版本较旧，请用新版 Edge 或 Chrome 打开。');
+      const decoded = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+      const parts = JSON.parse(decoded);
+      const palette = __PALETTE__;
+      const canvas = document.getElementById('canvas');
+      const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(34, 1, 1, 2000);
+      camera.up.set(0,0,1);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x8a9992, 2.05));
+      const mainLight = new THREE.DirectionalLight(0xffffff, 2.25);
+      mainLight.position.set(-100, 180, 270); scene.add(mainLight);
+      const fillLight = new THREE.DirectionalLight(0xb4eee9, 0.6);
+      fillLight.position.set(150, 40, 150); scene.add(fillLight);
+      const mats = {};
+      for (const [name, setting] of Object.entries(palette)) {
+        mats[name] = new THREE.MeshStandardMaterial({color:setting[0], roughness:setting[1], metalness:setting[2], side:THREE.DoubleSide});
+      }
+      function smoothWithCreases(vertices, indices) {
+        // 窗口边缘保留折角，避免前壳的大三角面把圆润侧面的法线拉出凹痕。
+        const vectors = [];
+        for (let i = 0; i < vertices.length; i += 3) vectors.push(new THREE.Vector3(vertices[i], vertices[i+1], vertices[i+2]));
+        const faceNormals = [], adjacent = Array.from({length:vectors.length}, () => []);
+        for (let i = 0; i < indices.length; i += 3) {
+          const [a,b,c] = [indices[i], indices[i+1], indices[i+2]];
+          const normal = new THREE.Vector3().subVectors(vectors[b], vectors[a]).cross(new THREE.Vector3().subVectors(vectors[c], vectors[a])).normalize();
+          const fi = faceNormals.push(normal) - 1;
+          for (const vi of [a,b,c]) adjacent[vi].push(fi);
+        }
+        const positions = [], normals = [];
+        for (let i = 0; i < indices.length; i++) {
+          const vi = indices[i], current = faceNormals[Math.floor(i / 3)], normal = new THREE.Vector3();
+          for (const fi of adjacent[vi]) if (current.dot(faceNormals[fi]) > 0.72) normal.add(faceNormals[fi]);
+          normal.normalize(); positions.push(...vectors[vi].toArray()); normals.push(...normal.toArray());
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+        return geometry;
+      }
+      for (const part of parts) {
+        const geo = smoothWithCreases(part.vertices, part.faces);
+        const mesh = new THREE.Mesh(geo, mats[part.material]);
+        mesh.name = part.name; scene.add(mesh);
+      }
+      let yaw = 0.02, elev = 0.025, radius = 390;
+      const target = new THREE.Vector3(0, 0, 79);
+      function render() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const w = Math.max(1, rect.width), h = Math.max(1, rect.height);
+        renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+        const planar = radius * Math.cos(elev);
+        camera.position.set(target.x + planar * Math.sin(yaw), target.y + planar * Math.cos(yaw), target.z + radius * Math.sin(elev));
+        camera.lookAt(target); renderer.render(scene, camera);
+      }
+      let pointer = null;
+      canvas.addEventListener('pointerdown', event => { pointer = [event.clientX, event.clientY]; canvas.setPointerCapture(event.pointerId); });
+      canvas.addEventListener('pointermove', event => {
+        if (!pointer) return;
+        yaw -= (event.clientX - pointer[0]) * .009;
+        elev = Math.max(-1.2, Math.min(1.2, elev + (event.clientY - pointer[1]) * .007));
+        pointer = [event.clientX, event.clientY]; render();
+      });
+      canvas.addEventListener('pointerup', () => { pointer = null; });
+      canvas.addEventListener('pointercancel', () => { pointer = null; });
+      canvas.addEventListener('wheel', event => { event.preventDefault(); radius = Math.max(220, Math.min(650, radius * Math.exp(event.deltaY * .001))); render(); }, {passive:false});
+      document.getElementById('front').onclick = () => { yaw = 0; elev = 0; render(); };
+      document.getElementById('angle').onclick = () => { yaw = .44; elev = .13; render(); };
+      document.getElementById('reset').onclick = () => { yaw = .02; elev = .025; radius = 390; render(); };
+      window.addEventListener('resize', render); status.style.display = 'none'; render();
+      window.__robotReady = {parts:parts.length};
+    } catch (error) { console.error(error); status.textContent = '模型未能打开：' + error.message; }
+  })();
+  </script>
+</body>
+</html>

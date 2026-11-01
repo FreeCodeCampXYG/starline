@@ -1,0 +1,23 @@
+# 工具缓存
+.codegraph/
+.workbuddy/
+
+# 依赖与编译产物
+node_modules/
+__pycache__/
+*.pyc
+ljyd_xjwb03_agent_public_developer/apps/build/
+
+# 烧录包与压缩包（不属于源码）
+*.zip
+*.rar
+
+# 输出产物与测试原始数据
+outputs/
+output/
+现场音频测试/
+ljyd_xjwb03_agent_public_developer_incomplete-transfer/
+
+# 大媒体文件
+*.mp3
+*.pcm
