@@ -1,0 +1,22 @@
+{
+  "rootPage": "MainPage.html",
+  "page": {
+    "MainPage.html": { "title": "故事搭子" }
+  },
+  "defaultPageStyle": {
+    "light": {
+      "statusBarStyle": "dark",
+      "navigationBarStyle": 0,
+      "navigationBarTint": "172D2A",
+      "preLoadBackgroundColor": "F4F7F5",
+      "navigationBarBackgroundColor": "F4F7F5"
+    },
+    "dark": {
+      "statusBarStyle": "dark",
+      "navigationBarStyle": 0,
+      "navigationBarTint": "172D2A",
+      "preLoadBackgroundColor": "F4F7F5",
+      "navigationBarBackgroundColor": "F4F7F5"
+    }
+  }
+}

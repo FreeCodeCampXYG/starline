@@ -1,0 +1,47 @@
+{
+  "light": {
+    "app-bg": "#fff5ec",
+    "surface": "#fffbff",
+    "text": "#2c292f",
+    "muted": "#5c585f",
+    "accent": "#67577d",
+    "on-accent": "#ffffff",
+    "tint": "#f1e3ff",
+    "line": "#e7e0e8",
+    "banner": "#fffbff",
+    "art-start": "#a996c0",
+    "art-end": "#6f5e85",
+    "cover-2": "#ffe3cb",
+    "cover-3": "#d6efd3"
+  },
+  "dark": {
+    "app-bg": "#1b181e",
+    "surface": "#262328",
+    "text": "#f0e9f1",
+    "muted": "#c0b9c1",
+    "accent": "#d2beea",
+    "on-accent": "#2d1f41",
+    "tint": "#3d2e51",
+    "line": "#423f45",
+    "banner": "#262328",
+    "art-start": "#dec9f6",
+    "art-end": "#b6a3ce",
+    "cover-2": "#44311d",
+    "cover-3": "#253a26"
+  },
+  "forest": {
+    "app-bg": "#fff5ec",
+    "surface": "#fffbff",
+    "text": "#2c292f",
+    "muted": "#5c585f",
+    "accent": "#4e644e",
+    "on-accent": "#ffffff",
+    "tint": "#d6efd3",
+    "line": "#e7e0e8",
+    "banner": "#fffbff",
+    "art-start": "#8ca48b",
+    "art-end": "#556b55",
+    "cover-2": "#ffe3cb",
+    "cover-3": "#d6efd3"
+  }
+}

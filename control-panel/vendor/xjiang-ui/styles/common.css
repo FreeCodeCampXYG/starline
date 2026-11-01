@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --active-color: #20a09f;
+  --page-bg: #f7f7f7;
+  --card-bg: #fff;
+
+  --color-text-first: rgba(0, 0, 0, 0.9);
+  --color-text-second: rgba(0, 0, 0, 0.6);
+  --color-text-third: rgba(0, 0, 0, 0.4);
+
+  --icon-button-bg: rgba(0, 0, 0, 0.05);
+  --icon-color: rgba(0, 0, 0, 0.4);
+
+  --separator-color: rgba(0, 0, 0, 0.1);
+  --bg-color__overlay: rgba(0, 0, 0, 0.08);
+
+  --bg-color__slider: rgba(0, 0, 0, 0.1);
+  --bg-color__slider--inactive: rgba(0, 0, 0, 0.3);
+  --bg-color__slider-breakpoint: rgba(0, 0, 0, 0.2);
+
+  --error-color: #e84026;
+}
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --active-color: #20a09f;
+    --page-bg: #000;
+    --card-bg: rgba(255,255,255,.04);
+
+    --color-text-first: rgba(255,255,255,.9);
+    --color-text-second: rgba(255,255,255,.6);
+    --color-text-third: rgba(255,255,255,.4);
+    
+    --icon-button-bg: rgba(0,0,0,.05);
+    --icon-color: rgba(0,0,0,.4);
+
+    --separator-color: rgba(255,255,255,.1);
+    --bg-color__overlay: rgba(255,255,225,.08);
+    
+    --bg-color__slider: rgba(255, 255, 255, 0.1);
+    --bg-color__slider--inactive: rgba(0, 0, 0, 0.3);
+    --bg-color__slider-breakpoint: rgba(255, 255, 255, 0.2);
+    
+    --error-color: #d94e38;
+  }
+} */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+html {
+  font-size: 14px;
+}
+body {
+  height: 100vh;
+  color: var(--color-text-first);
+  background: var(--page-bg);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    "PingFang SC",
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  & > div:not(.toast) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+.main {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  padding: 0 1.4rem 1rem;
+}
+
+.card {
+  padding: 1rem 1.1rem;
+  margin-top: 1.1rem;
+  border-radius: 10px;
+  background-color: #fff;
+}
+.cardDisabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.text-first {
+  font-size: 1.16rem;
+  color: var(--color-text-first);
+}
+.text-second {
+  font-size: 1rem;
+  color: var(--color-text-first);
+}
+.text-third {
+  font-size: 1rem;
+  color: var(--color-text-second);
+}
+.text-four {
+  font-size: 0.9rem;
+  color: var(--color-text-second);
+}
+.text-five {
+  font-size: 0.9rem;
+  color: var(--color-text-third);
+}
+
+.divider {
+  border-bottom: 1px solid var(--separator-color);
+}

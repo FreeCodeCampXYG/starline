@@ -1,0 +1,8 @@
+<script setup lang="ts">
+const props = defineProps<{ variant?: number }>();
+</script>
+<template>
+  <svg v-if="(props.variant ?? 0)%3===0" viewBox="0 0 160 160" aria-hidden="true" class="cover-art"><rect width="160" height="160" fill="#d5c6eb"/><path d="M0 0h160v110C107 75 46 99 0 57z" fill="#b5a2d2"/><circle cx="111" cy="49" r="25" fill="#fff4d7"/><path d="M0 122Q49 61 112 108t48 5v47H0" fill="#7f789d"/><path d="M0 146Q55 97 160 139v21H0" fill="#595775"/><path d="M29 38v12m-6-6h12M56 66v8m-4-4h8" stroke="#fffaf2" stroke-width="2"/><path d="M43 160Q88 110 134 121" fill="none" stroke="#ddd0ed" stroke-width="5"/></svg>
+  <svg v-else-if="(props.variant ?? 0)%3===1" viewBox="0 0 160 160" aria-hidden="true" class="cover-art"><rect width="160" height="160" fill="#ead0b5"/><circle cx="112" cy="46" r="32" fill="#fff1cd"/><path d="M-17 90Q35 50 80 94t94-8v88H-17" fill="#c89579"/><path d="M-10 116Q57 70 174 133v38H-10" fill="#937082"/><path d="M-12 145Q58 106 172 157" fill="none" stroke="#f5d4b0" stroke-width="8"/><path d="M40 53v41m0-41 20-4v31" fill="none" stroke="#7b637b" stroke-width="5" stroke-linejoin="round"/><ellipse cx="32" cy="94" rx="10" ry="6" fill="#7b637b"/><ellipse cx="52" cy="81" rx="10" ry="6" fill="#7b637b"/></svg>
+  <svg v-else viewBox="0 0 160 160" aria-hidden="true" class="cover-art"><rect width="160" height="160" fill="#dce7ce"/><circle cx="98" cy="45" r="29" fill="#f8efcc"/><path d="M0 118Q63 78 160 121v39H0" fill="#9eaf91"/><path d="M15 139 58 57l41 82z" fill="#668473"/><path d="m65 146 43-104 47 104z" fill="#42685d"/><path d="M0 158Q81 112 160 153v7H0" fill="#c3cba6"/><path d="m109 43-2 91M59 58l-1 75" stroke="#c2d4bd" stroke-width="2"/></svg>
+</template>

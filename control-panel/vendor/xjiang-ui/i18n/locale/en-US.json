@@ -1,0 +1,31 @@
+{
+  "more": "More",
+  "online": "Online",
+  "offline": "Offline",
+  "connected": "Connected",
+  "connecting": "Connecting",
+  "unconnected": "Not Connected",
+  "searching": "Searching",
+  "reconnect": "Reconnect",
+  "connect": "Connect",
+
+  "dialog": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+
+    "page_connect_timeout": {
+      "title": "Abnormal page connection",
+      "message": "Please try the following: \n1. Exit the device control page and re-enter \n2. Reload this page",
+      "cancel": "Exit",
+      "confirm": "Reload"
+    },
+
+    "connection_timeout": {
+      "title": "Connection timed out",
+      "message": "Please try the following: \n1. Please make sure the device is fully charged and connected. \n2. Bring the device closer to the phone you want to connect to. \n3. Turn off the phone's Bluetooth and then turn it back on",
+      "cancel": "Retry later",
+      "confirm": "Reconnect"
+    }
+  },
+  "gear": " gear"
+}

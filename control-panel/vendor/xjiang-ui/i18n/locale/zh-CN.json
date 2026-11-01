@@ -1,0 +1,38 @@
+{
+  "more": "更多",
+  "online": "在线",
+  "offline": "离线",
+  "connected": "已连接",
+  "connecting": "连接中",
+  "unconnected": "未连接",
+  "searching": "正在搜索",
+  "reconnect": "重连",
+  "connect": "连接",
+
+  "dialog": {
+    "cancel": "取消",
+    "confirm": "确定",
+
+    "page_connect_timeout": {
+      "title": "页面连接异常",
+      "message": "请尝试以下操作：\n1.退出设备控制页面，重新进入\n2.重新加载本页面",
+      "cancel": "退出",
+      "confirm": "重新加载"
+    },
+
+    "connection_timeout": {
+      "title": "连接超时",
+      "message": "请尝试以下操作：\n1.请确认设备电量充足,并处于连接状态\n2.将设备靠近要连接的手机\n3.关闭手机蓝牙，再重新开启",
+      "cancel": "稍后再试",
+      "confirm": "重新连接"
+    },
+
+    "offline": {
+      "title": "设备已离线",
+      "message": "请将设备接通电源，或将设备断电后重新上电",
+      "cancel": "返回首页",
+      "confirm": "离线原因"
+    }
+  },
+  "gear": "挡"
+}
