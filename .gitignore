@@ -22,3 +22,6 @@ ljyd_xjwb03_agent_public_developer_incomplete-transfer/
 *.mp3
 *.pcm
 tmp/
+
+# 官方编译框架（不随仓库提交）
+ljyd_xjwb03_agent_public_developer/esp-idf/
