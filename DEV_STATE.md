@@ -20,6 +20,7 @@
 - 当前硬件：PID11910/DID100000817；COM5 ESP32-S3尾号B5:8C，2026-11-01 仅更新0x20000应用段，Hash verify通过，Wi-Fi/NVS保留。当前镜像3215392 bytes、SHA256 `36A053E088EAC23AD0668640CB341ACCEC2010562BFAB20D02CCFE1760B9096F`，IDF5.4.1/基线89020f5e，约22%分区余量；启动后 `voice status cloud=1 started=0 state=ready`。
 - 固件：新增player/pause|resume|stop异步worker与player/report，修复迟到终态清理新任务、release busy丢句柄、VB701N暂停/继续ENOSYS；新增用户提供的4.64秒启动语音。根因已确认：VB701N 未声明物理 DRAIN，音频引擎之前在等待渲染队列前就返回 `-QM_ENOSYS`，Service 随即停止 worker，可能截断长启动音。引擎现等待所有已接受帧完成 UART 写操作后，再报告物理播放回执不支持；IDF构建及应用段 Hash verify通过，已刷COM5。日志确认 `local audio submitted frames=232; speaker completion is unconfirmed`，重启后云连接正常；扬声器实际听感仍待用户确认。GPIO38 busy 是传输限制线索，未猜改有效极性。修复包在`outputs/story-companion-player-firmware/灵机_PID11910_启动语音播放修复_应用升级_20261101.zip`。
 - 用户指出此前反馈倾向不要改音频代码；当前应用已经包含共享 `qm_audio` Engine 改动并已刷写。后续暂停音频实现修改，只做日志、命令链路和硬件核对。
+- 当前启动 PCM 峰值约 `-6.0 dBFS`、RMS 约 `-23.4 dBFS`，排除源文件全静音；音量日志为 15/硬件值4，但是否足够响尚无听感证据。当前驱动将 GPIO38 配为输入下拉，板卡 Skill 表格却标输出，主板原理图/实物映射缺失，方向与极性待核。COM5 本轮 2 秒被动读取没有新日志。
 - Wi-Fi由wifi_cfg KV/NVS持久化，普通重启读取。2026-11-01 用户从家用 Wi-Fi 换到其他网络后，COM5监听确认设备持续断连且 `cloud=0`；清除旧配置后按用户指定的 `INTERCITYHACK-NB-PLAYER-2.4G` 重新配网，设备日志确认 `wifi got ip`、动态注册 DID `100000817`、MQTT 订阅成功和 `cloud connected`，只读 `voice status` 返回 `cloud=1 started=0 state=ready`。密码未写入状态文档或记忆。用户曾听懂回复一次为用户报告，日志捕获过Agora断开约8秒后恢复；连续对话根因仍待查。
 - 配网回退修复：`apps/main/cloud/ljyd_provision.c` 新增连续 10 次 Wi-Fi 失败后自动清理旧配置并重启进入 BLE 的兜底，已包含于当前 COM5 应用镜像；10 次失败自动回 BLE 尚未做真机回归。
 - `qm_audio` 新增无物理 DRAIN 时等待已接受渲染写入的回归用例。宿主测试链接被 Windows MinGW 缺少 `sys/select.h` 阻断，未实际运行；IDF 5.4.1 全量应用构建通过。
